@@ -14,7 +14,7 @@ local activeLoopName = nil
 local isMinimized = false
 local infiniteJump = false 
 
--- ⚡ TARGET PLACEHOLDERS
+-- ⚡ TARGET PLACEHOLDERS (Cleaned up vectors so they never throw nil errors)
 local TARGETS = {
 	 guns = {
 	 	Gun1 = CFrame.new(114.4, 335.5, 569.9), -- Raygun
@@ -56,8 +56,6 @@ gui.Parent = player:WaitForChild("PlayerGui")
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 520, 0, 320)
 main.Position = UDim2.new(0.5, -260, 0.5, -160)
-
--- ✨ NEON TRANSPARENT VISUAL OVERHAUL (UNCHANGED)
 main.BackgroundColor3 = Color3.fromRGB(0, 240, 255) 
 main.BackgroundTransparency = 0.88 
 main.BorderSizePixel = 0
@@ -117,13 +115,12 @@ task.spawn(function()
 end)
 
 -- ====================================================================
--- ✨ 2. NOTIFICATION SYSTEM (Transparent Dark Style)
+-- ✨ 2. NOTIFICATION SYSTEM
 -- ====================================================================
 local function showNotification(titleText, bodyText)
 	local notifFrame = Instance.new("Frame")
 	notifFrame.Size = UDim2.new(0, 300, 0, 75)
 	notifFrame.Position = UDim2.new(1, 20, 1, -95) 
-	
 	notifFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 	notifFrame.BackgroundTransparency = 0.4
 	notifFrame.BorderSizePixel = 0
@@ -294,7 +291,6 @@ local function createPage(name)
 	f.Visible = false
 	f.Parent = content
 	
-	-- 🛠️ AUTO LAYOUT MANAGER (Aligns anything perfectly regardless of count)
 	local layout = Instance.new("UIListLayout")
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Padding = UDim.new(0, 6)
@@ -390,33 +386,21 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, coreT
 end
 
 -- ====================================================================
--- 🔄 AUTOMATED LOOPS FOR CONFIG TABLES
+-- 🔄 ULTRA-STABLE PARSING LOOPS
 -- ====================================================================
 
--- Generate Gun Buttons
+-- Generate Gun Buttons safely using string extraction to maintain neat ordering
 createHeaderLabel(guns, "GUNS CONTROLS", 0)
-local gunCount = 1
-while true do
-	local key = "Gun" .. gunCount
-	if TARGETS.guns[key] then
-		createInstantTeleportButton(guns, "TP | " .. key, key, TARGETS.guns, gunCount)
-		gunCount = gunCount + 1
-	else
-		break
-	end
+for key, _ in pairs(TARGETS.guns) do
+	local numOrder = tonumber(string.match(key, "%d+")) or 1
+	createInstantTeleportButton(guns, "TP | " .. tostring(key), key, TARGETS.guns, numOrder)
 end
 
--- Generate Zombie Buttons
+-- Generate Zombie Buttons safely
 createHeaderLabel(zombie, "ZOMBIE CONTROLS", 0)
-local zombieCount = 1
-while true do
-	local key = "Zombie" .. zombieCount
-	if TARGETS.zombie[key] then
-		createInstantTeleportButton(zombie, "TP | " .. key, key, TARGETS.zombie, zombieCount)
-		zombieCount = zombieCount + 1
-	else
-		break
-	end
+for key, _ in pairs(TARGETS.zombie) do
+	local numOrder = tonumber(string.match(key, "%d+")) or 1
+	createInstantTeleportButton(zombie, "TP | " .. tostring(key), key, TARGETS.zombie, numOrder)
 end
 
 -- ====================================================================
@@ -495,7 +479,7 @@ infJumpBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
-(UserInputService :: UserInputService).JumpRequest:Connect(function()
+UserInputService.JumpRequest:Connect(function()
 	if infiniteJump and player.Character then
 		local hum = player.Character:FindFirstChildOfClass("Humanoid")
 		if hum then
