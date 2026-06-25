@@ -314,7 +314,7 @@ end
 createTabButton("Guns", 20)
 createTabButton("Zombie", 60)
 createTabButton("Player", 100)
-createTabButton("Settings", 135)
+createTabButton("Settings", 140)
 
 local function createHeaderLabel(parent, text)
 	local label = Instance.new("TextLabel")
@@ -359,7 +359,7 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 			
 			if typeof(targetCFrame) == "CFrame" then
 				char:PivotTo(targetCFrame)
-				showNotification("🌀 TELEPORT STATUS", "Instant jump to: " .. tostring(targetKey))
+				showNotification("🌀 TELEPORT STATUS", "Instant Tp to: " .. tostring(targetKey))
 			end
 		end
 	end)
@@ -368,12 +368,12 @@ end
 createHeaderLabel(guns, "GUNS CONTROLS")
 -- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
 createInstantTeleportButton(guns, "TP | Raygun", "Gun1", 5, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | G36C", "Gun2", 15, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Armor", "Gun3", 25, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | SVD", "Gun4", 35, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 45, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | AK47", "Gun6", 55, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M1014", "Gun7", 65, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | G36C", "Gun2", 50, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Armor", "Gun3", 95, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | SVD", "Gun4", 140, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 185, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AK47", "Gun6", 230, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M1014", "Gun7", 275, TARGETS.guns)
 
 local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
