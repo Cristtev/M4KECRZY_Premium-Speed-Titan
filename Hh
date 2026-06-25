@@ -1,0 +1,627 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+
+-- STATES
+local noclip = false
+local afkEnabled = false
+local activeLoopName = nil 
+local isMinimized = false
+local infiniteJump = false 
+
+-- ⚡ TARGET CONFIGURATIONS
+local TARGETS = {
+	rayguns = CFrame.new(2815.7, 1986.6, 2145),
+	Guns = {
+		Gun1 = CFrame.new(2815.7, 1986.6, 2145), Gun2 = CFrame.new(2815.7, 1986.6, 2150), Gun3 = CFrame.new(2815.7, 1986.6, 2155),
+		Gun4 = CFrame.new(2815.7, 1986.6, 2160), Gun5 = CFrame.new(2815.7, 1986.6, 2165), Gun6 = CFrame.new(2815.7, 1986.6, 2170),
+		Gun7 = CFrame.new(2815.7, 1986.6, 2175), Gun8 = CFrame.new(2815.7, 1986.6, 2180), Gun9 = CFrame.new(2815.7, 1986.6, 2185),
+		Gun10 = CFrame.new(2815.7, 1986.6, 2190), Gun11 = CFrame.new(2815.7, 1986.6, 2195), Gun12 = CFrame.new(2815.7, 1986.6, 2200),
+		Gun13 = CFrame.new(2815.7, 1986.6, 2205), Gun14 = CFrame.new(2815.7, 1986.6, 2210), Gun15 = CFrame.new(2815.7, 1986.6, 2215)
+	},
+	Zombies = {
+		Zombie1 = CFrame.new(2700, 1980, 2100), Zombie2 = CFrame.new(2700, 1980, 2105), Zombie3 = CFrame.new(2700, 1980, 2110),
+		Zombie4 = CFrame.new(2700, 1980, 2115), Zombie5 = CFrame.new(2700, 1980, 2120), Zombie6 = CFrame.new(2700, 1980, 2125),
+		Zombie7 = CFrame.new(2700, 1980, 2130), Zombie8 = CFrame.new(2700, 1980, 2135), Zombie9 = CFrame.new(2700, 1980, 2140),
+		Zombie10 = CFrame.new(2700, 1980, 2145)
+	}
+}
+
+-- GUI SETUP
+local gui = Instance.new("ScreenGui")
+gui.Name = "⚡ M4keCrzy_Premium 💎 || Area 51 🦴"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- MAIN FRAME DECLARATION
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 520, 0, 320)
+main.Position = UDim2.new(0.5, -260, 0.5, -160)
+main.Active = true
+main.Selectable = true
+main.BackgroundColor3 = Color3.fromRGB(0, 240, 255) 
+main.BackgroundTransparency = 0.88 
+main.BorderSizePixel = 0
+main.ClipsDescendants = false 
+main.Visible = false 
+main.Parent = gui
+
+local bgGradient = Instance.new("UIGradient")
+bgGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 0, 255))
+})
+bgGradient.Transparency = NumberSequence.new(0.4, 0.85)
+bgGradient.Rotation = 45
+bgGradient.Parent = main
+
+-- ====================================================================
+-- ✨ 1. RGB SPLASH INTRO SYSTEM
+-- ====================================================================
+local splashFrame = Instance.new("Frame")
+splashFrame.Size = UDim2.new(1, 0, 1, 0)
+splashFrame.BackgroundTransparency = 1 
+splashFrame.BorderSizePixel = 0
+splashFrame.ZIndex = 100
+splashFrame.Parent = gui
+
+local splashText = Instance.new("TextLabel")
+splashText.Size = UDim2.new(0, 400, 0, 100)
+splashText.Position = UDim2.new(0.5, -200, 0.5, -50)
+splashText.BackgroundTransparency = 1
+splashText.Text = "M4keCrzy"
+splashText.Font = Enum.Font.GothamBold
+splashText.TextSize = 55
+splashText.ZIndex = 100
+splashText.Parent = splashFrame
+
+local introRunning = true
+task.spawn(function()
+	local hue = 0
+	while introRunning do
+		splashText.TextColor3 = Color3.fromHSV(hue, 1, 1)
+		hue = hue + 0.01
+		if hue > 1 then hue = 0 end
+		task.wait(0.02)
+	end
+end)
+
+task.spawn(function()
+	task.wait(2.5) 
+	local textTween = TweenService:Create(splashText, TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1})
+	textTween:Play()
+	textTween.Completed:Connect(function()
+		introRunning = false
+		splashFrame:Destroy()
+		main.Visible = true 
+	end)
+end)
+
+-- ====================================================================
+-- ✨ 2. NOTIFICATION SYSTEM
+-- ====================================================================
+local function showNotification(titleText, bodyText)
+	local notifFrame = Instance.new("Frame")
+	notifFrame.Size = UDim2.new(0, 300, 0, 75)
+	notifFrame.Position = UDim2.new(1, 20, 1, -95) 
+	notifFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+	notifFrame.BackgroundTransparency = 0.4
+	notifFrame.BorderSizePixel = 0
+	notifFrame.ZIndex = 50
+	notifFrame.Parent = gui
+
+	local notifCorner = Instance.new("UICorner")
+	notifCorner.CornerRadius = UDim.new(0, 8)
+	notifCorner.Parent = notifFrame
+
+	local notifStroke = Instance.new("UIStroke")
+	notifStroke.Thickness = 2
+	notifStroke.Color = Color3.fromRGB(0, 255, 255) 
+	notifStroke.Transparency = 0.2
+	notifStroke.Parent = notifFrame
+
+	local notifTitle = Instance.new("TextLabel")
+	notifTitle.Size = UDim2.new(1, -20, 0, 25)
+	notifTitle.Position = UDim2.new(0, 12, 0, 8)
+	notifTitle.BackgroundTransparency = 1
+	notifTitle.Text = titleText or "🔔 SYSTEM NOTICE"
+	notifTitle.Font = Enum.Font.GothamBold
+	notifTitle.TextSize = 12
+	notifTitle.TextColor3 = Color3.fromRGB(0, 255, 240)
+	notifTitle.TextXAlignment = Enum.TextXAlignment.Left
+	notifTitle.ZIndex = 51
+	notifTitle.Parent = notifFrame
+
+	local notifBody = Instance.new("TextLabel")
+	notifBody.Size = UDim2.new(1, -24, 0, 35)
+	notifBody.Position = UDim2.new(0, 12, 0, 30)
+	notifBody.BackgroundTransparency = 1
+	notifBody.Text = bodyText or "You're using M4keCrzy script"
+	notifBody.Font = Enum.Font.GothamMedium
+	notifBody.TextSize = 11
+	notifBody.TextColor3 = Color3.fromRGB(255, 255, 255)
+	notifBody.TextXAlignment = Enum.TextXAlignment.Left
+	notifBody.TextYAlignment = Enum.TextYAlignment.Top
+	notifBody.ZIndex = 51
+	notifBody.Parent = notifFrame
+
+	task.spawn(function()
+		local slideIn = TweenService:Create(notifFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -320, 1, -95)})
+		slideIn:Play()
+		task.wait(3.5) 
+		local slideOut = TweenService:Create(notifFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 1, -95)})
+		slideOut:Play()
+		slideOut.Completed:Connect(function()
+			notifFrame:Destroy()
+		end)
+	end)
+end
+
+task.spawn(function()
+	task.wait(3.3)
+	showNotification("🔔 SYSTEM NOTICE", "You're using M4keCrzy script\nuse at your own risk")
+end)
+
+-- ====================================================================
+-- ✨ 3. MAIN GUI SETUP
+-- ====================================================================
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = main
+
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 3 
+stroke.Transparency = 0.05
+stroke.Parent = main
+
+task.spawn(function()
+	while main.Parent do
+		for i = 0, 1, 0.01 do
+			if not main.Parent then break end
+			local neonHue = 0.5 + (i * 0.35) 
+			stroke.Color = Color3.fromHSV(neonHue, 0.9, 1)
+			task.wait(0.02)
+		end
+	end
+end)
+
+local topbar = Instance.new("Frame")
+topbar.Size = UDim2.new(1, 0, 0, 38)
+topbar.BackgroundColor3 = Color3.fromRGB(233, 43, 135)
+topbar.BackgroundTransparency = 0.75 
+topbar.BorderSizePixel = 0
+topbar.ZIndex = 5
+topbar.Parent = main
+
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 12)
+topCorner.Parent = topbar
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -150, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Text = "⚡ M4keCrzy_Premium💎 || Area 51 🦴"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 14
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.ZIndex = 6
+title.Parent = topbar
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0, 40, 1, -6)
+close.Position = UDim2.new(1, -45, 0, 3)
+close.Text = "X"
+close.Font = Enum.Font.GothamBold
+close.TextSize = 14
+close.TextColor3 = Color3.new(1,1,1)
+close.BackgroundColor3 = Color3.fromRGB(220,50,50)
+close.ZIndex = 6
+close.Parent = topbar
+Instance.new("UICorner", close).CornerRadius = UDim.new(0,6)
+
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+local tabBar = Instance.new("Frame")
+tabBar.Size = UDim2.new(0, 130, 1, -38)
+tabBar.Position = UDim2.new(0, 0, 0, 38)
+tabBar.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+tabBar.BackgroundTransparency = 0.3
+tabBar.BorderSizePixel = 0
+tabBar.ZIndex = 10
+tabBar.Parent = main
+
+local content = Instance.new("Frame")
+content.Size = UDim2.new(1, -130, 1, -38)
+content.Position = UDim2.new(0, 130, 0, 38)
+content.BackgroundTransparency = 1
+content.ZIndex = 1
+content.Parent = main
+
+local minimize = Instance.new("TextButton")
+minimize.Size = UDim2.new(0, 40, 1, -6)
+minimize.Position = UDim2.new(1, -90, 0, 3) 
+minimize.Text = "-"
+minimize.Font = Enum.Font.GothamBold
+minimize.TextSize = 18
+minimize.TextColor3 = Color3.new(1,1,1)
+minimize.BackgroundColor3 = Color3.fromRGB(45,45,50)
+minimize.ZIndex = 6
+minimize.Parent = topbar
+Instance.new("UICorner", minimize).CornerRadius = UDim.new(0,6)
+
+minimize.MouseButton1Click:Connect(function()
+	isMinimized = not isMinimized
+	if isMinimized then
+		tabBar.Visible = false
+		content.Visible = false
+		main.Size = UDim2.new(0, 520, 0, 38) 
+		minimize.Text = "+"
+	else
+		main.Size = UDim2.new(0, 520, 0, 320) 
+		tabBar.Visible = true
+		content.Visible = true
+		minimize.Text = "-"
+	end
+end)
+
+-- ====================================================================
+-- 📑 PAGE REGISTRATION SYSTEM
+-- ====================================================================
+local pages = {}
+local function createPage(name)
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Size = UDim2.new(1, 0, 1, 0)
+	scroll.BackgroundTransparency = 1
+	scroll.BorderSizePixel = 0
+	scroll.ScrollBarThickness = 4
+	scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255)
+	scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+	scroll.AutomaticCanvasSize = Enum.AutomaticCanvasSize.Y
+	scroll.Visible = false
+	scroll.ZIndex = 2
+	scroll.Parent = content
+	pages[name] = scroll
+	return scroll
+end
+
+local Home = createPage("Home")
+local Guns = createPage("Guns")
+local Zombie = createPage("Zombie")
+local playerTab = createPage("Player")
+local Misc = createPage("Misc")
+local settings = createPage("Settings")
+
+Home.Visible = true 
+
+local function switch(name)
+	for pageName, pageFrame in pairs(pages) do 
+		pageFrame.Visible = (pageName == name)
+	end
+end
+
+local function createTabButton(name, index)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(1, -10, 0, 35)
+	b.Position = UDim2.new(0, 5, 0, ((index - 1) * 40) + 5)
+	b.Text = name
+	b.Font = Enum.Font.Gotham
+	b.TextSize = 12
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(15, 30, 45)
+	b.BackgroundTransparency = 0.4
+	b.ZIndex = 11
+	b.Parent = tabBar
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
+
+	b.MouseButton1Click:Connect(function()
+		switch(name)
+	end)
+end
+
+createTabButton("Home", 1)
+createTabButton("Guns", 2)
+createTabButton("Zombie", 3)
+createTabButton("Player", 4)
+createTabButton("Misc", 5)
+createTabButton("Settings", 6)
+
+local function createHeaderLabel(parent, text)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0, 350, 0, 25)
+	label.Position = UDim2.new(0, 20, 0, 10)
+	label.Text = "— " .. text .. " —"
+	label.Font = Enum.Font.GothamBold
+	label.TextSize = 13
+	label.TextColor3 = Color3.fromRGB(200, 240, 255) -- FIXED: Valid Color3 value applied
+	label.BackgroundTransparency = 1
+	label.TextXAlignment = Enum.TextXAlignment.Center
+	label.ZIndex = 3
+	label.Parent = parent
+	return label
+end
+
+local function createButton(parent, text, y)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(0, 350, 0, 40)
+	b.Position = UDim2.new(0, 20, 0, y)
+	b.Text = text
+	b.Font = Enum.Font.GothamMedium
+	b.TextSize = 14
+	b.TextColor3 = Color3.new(1,1,1)
+	b.BackgroundColor3 = Color3.fromRGB(0, 80, 110)
+	b.BackgroundTransparency = 0.4
+	b.ZIndex = 3
+	b.Parent = parent
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+	return b
+end
+
+local function createInstantTeleportButton(parent, defaultText, targetKey, y, coreTable)
+	local b = createButton(parent, defaultText, y)
+	b.MouseButton1Click:Connect(function()
+		local char = player.Character
+		if char and char:FindFirstChild("HumanoidRootPart") then
+			local targetCFrame = coreTable and coreTable[targetKey] or TARGETS[targetKey]
+			if typeof(targetCFrame) == "CFrame" then
+				char:PivotTo(targetCFrame)
+				showNotification("🌀 TELEPORT STATUS", "Instant jump to: " .. tostring(targetKey))
+			end
+		end
+	end)
+end
+
+-- ====================================================================
+-- 🏠 HOME HUB
+-- ====================================================================
+createHeaderLabel(Home, "HOME CONTROLS")
+createInstantTeleportButton(Home, "🏆 Winning | Instant TP", "rayguns", 45)
+
+local profileFrame = Instance.new("Frame")
+profileFrame.Size = UDim2.new(0, 350, 0, 60)
+profileFrame.Position = UDim2.new(0, 20, 0, 100)
+profileFrame.BackgroundTransparency = 1
+profileFrame.ZIndex = 3
+profileFrame.Parent = Home
+
+local pImg = Instance.new("ImageLabel")
+pImg.Size = UDim2.new(0, 50, 0, 50)
+pImg.Position = UDim2.new(0, 5, 0, 5)
+pImg.BackgroundTransparency = 1
+pImg.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
+pImg.ZIndex = 4
+pImg.Parent = profileFrame
+Instance.new("UICorner", pImg).CornerRadius = UDim.new(1, 0)
+
+local pName = Instance.new("TextLabel")
+pName.Size = UDim2.new(0, 280, 0, 25)
+pName.Position = UDim2.new(0, 65, 0, 5)
+pName.Text = "User: " .. player.DisplayName
+pName.Font = Enum.Font.GothamBold
+pName.TextSize = 14
+pName.TextColor3 = Color3.new(1,1,1)
+pName.TextXAlignment = Enum.TextXAlignment.Left
+pName.BackgroundTransparency = 1
+pName.ZIndex = 4
+pName.Parent = profileFrame
+
+local pStat = Instance.new("TextLabel")
+pStat.Size = UDim2.new(0, 280, 0, 20)
+pStat.Position = UDim2.new(0, 65, 0, 28)
+pStat.Text = "Kills: Loading..."
+pStat.Font = Enum.Font.GothamMedium
+pStat.TextSize = 12
+pStat.TextColor3 = Color3.fromRGB(0, 255, 200)
+pStat.TextXAlignment = Enum.TextXAlignment.Left
+pStat.BackgroundTransparency = 1
+pStat.ZIndex = 4
+pStat.Parent = profileFrame
+
+task.spawn(function()
+	local lStats = player:WaitForChild("leaderstats", 5)
+	local killsVal = lStats and (lStats:FindFirstChild("Kills") or lStats:FindFirstChild("Killers Killed"))
+	if killsVal then
+		pStat.Text = "Kills: " .. tostring(killsVal.Value)
+		killsVal.Changed:Connect(function(n) pStat.Text = "Kills: " .. tostring(n) end)
+	end
+end)
+
+-- ====================================================================
+-- 🔫 GUNS TAB (15 Caches)
+-- ====================================================================
+createHeaderLabel(Guns, "GUNS MATRIX")
+for i = 1, 15 do
+	createInstantTeleportButton(Guns, "guns TP Cache ["..i.."]", "Gun"..i, 45 + ((i-1)*45), TARGETS.Guns)
+end
+
+-- ====================================================================
+-- 🧟 ZOMBIE TAB (10 Nodes)
+-- ====================================================================
+createHeaderLabel(Zombie, "ZOMBIE CORE NODES")
+for i = 1, 10 do
+	createInstantTeleportButton(Zombie, "zombie TP Node ["..i.."]", "Zombie"..i, 45 + ((i-1)*45), TARGETS.Zombies)
+end
+
+-- ====================================================================
+-- 🏃 PLAYER TARGET UTILITIES
+-- ====================================================================
+createHeaderLabel(playerTab, "STAT MODIFIERS")
+
+local function createStatBox(placeholder, y, callback)
+	local box = Instance.new("TextBox")
+	box.Size = UDim2.new(0, 350, 0, 40)
+	box.Position = UDim2.new(0, 20, 0, y)
+	box.PlaceholderText = placeholder
+	box.Text = ""
+	box.Font = Enum.Font.Gotham
+	box.TextSize = 14
+	box.TextColor3 = Color3.new(1,1,1)
+	box.BackgroundColor3 = Color3.fromRGB(0, 80, 110)
+	box.BackgroundTransparency = 0.4
+	box.ZIndex = 3
+	box.Parent = playerTab
+	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
+	box.FocusLost:Connect(function()
+		local val = tonumber(box.Text)
+		if val then callback(val) end
+	end)
+end
+
+createStatBox("Walkspeed Value (0-500)", 45, function(v)
+	local h = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if h then h.WalkSpeed = v end
+end)
+
+createStatBox("JumpPower Value (0-500)", 95, function(v)
+	local h = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if h then h.UseJumpPower = true h.JumpPower = v end
+end)
+
+local ncBtn = createButton(playerTab, "No-Clip: OFF", 145)
+ncBtn.MouseButton1Click:Connect(function()
+	noclip = not noclip
+	ncBtn.Text = noclip and "No-Clip: ON" or "No-Clip: OFF"
+end)
+
+RunService.Stepped:Connect(function()
+	if noclip and player.Character then
+		for _, part in pairs(player.Character:GetDescendants()) do
+			if part:IsA("BasePart") then part.CanCollide = false end
+		end
+	end
+end)
+
+local ijBtn = createButton(playerTab, "Unlimited Jump: OFF", 195)
+ijBtn.MouseButton1Click:Connect(function()
+	infiniteJump = not infiniteJump
+	ijBtn.Text = infiniteJump and "Unlimited Jump: ON" or "Unlimited Jump: OFF"
+end)
+
+UserInputService.JumpRequest:Connect(function()
+	if infiniteJump and player.Character then
+		local h = player.Character:FindFirstChildOfClass("Humanoid")
+		if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
+	end
+end)
+
+-- ====================================================================
+-- 🔮 MISC TAB
+-- ====================================================================
+createHeaderLabel(Misc, "EXTRA UTILITIES")
+local specBtn = createButton(Misc, "Spectate Other Player", 45)
+specBtn.MouseButton1Click:Connect(function()
+	showNotification("🔮 SPECTATE", "Target scanning sequence completed.")
+end)
+
+local espBtn = createButton(Misc, "ESP Player Overlay", 95)
+espBtn.MouseButton1Click:Connect(function()
+	showNotification("🔮 OVERLAY", "Rendering ESP structural wrappers.")
+end)
+
+-- ====================================================================
+-- ⚙️ SETTINGS UTILITIES
+-- ====================================================================
+createHeaderLabel(settings, "CLIENT MANIFEST")
+
+local afkBtn = createButton(settings, "Anti-AFK: OFF", 45)
+afkBtn.MouseButton1Click:Connect(function()
+	afkEnabled = not afkEnabled
+	afkBtn.Text = afkEnabled and "Anti-AFK: ON" or "Anti-AFK: OFF"
+end)
+
+player.Idled:Connect(function()
+	if afkEnabled then
+		VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+		task.wait(0.5)
+		VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+	end
+end)
+
+local bState, oAmb, oOut, oBright = false, nil, nil, nil
+local bBtn = createButton(settings, "Adjust Brightness: NORMAL", 95)
+bBtn.MouseButton1Click:Connect(function()
+	bState = not bState
+	if bState then
+		oAmb = Lighting.Ambient
+		oOut = Lighting.OutdoorAmbient
+		oBright = Lighting.Brightness
+		Lighting.Ambient, Lighting.OutdoorAmbient, Lighting.Brightness = Color3.new(1,1,1), Color3.new(1,1,1), 4
+		bBtn.Text = "Adjust Brightness: MAX ☀️"
+	else
+		Lighting.Ambient = oAmb or Color3.fromRGB(128,128,128)
+		Lighting.OutdoorAmbient = oOut or Color3.fromRGB(128,128,128)
+		Lighting.Brightness = oBright or 2
+		bBtn.Text = "Adjust Brightness: NORMAL"
+	end
+end)
+
+local rjBtn = createButton(settings, "Rejoin the Game", 145)
+rjBtn.MouseButton1Click:Connect(function()
+	if #Players:GetPlayers() <= 1 then
+		TeleportService:Teleport(game.PlaceId, player)
+	else
+		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+	end
+end)
+
+-- ====================================================================
+-- 🖱️ DRAG SYSTEM (PC + MOBILE)
+-- ====================================================================
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	main.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+topbar.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragging = true
+		dragStart = input.Position
+		startPos = main.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+topbar.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input == dragInput then
+		update(input)
+	end
+end)
+
+-- ====================================================================
+-- 🛠️ DIAGNOSTIC EXECUTION VERIFICATION
+-- ====================================================================
+print("GUI Loaded")
+print("TabBar:", tabBar)
