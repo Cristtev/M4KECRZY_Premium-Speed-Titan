@@ -24,25 +24,6 @@ local TARGETS = {
 	 	Gun5 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
 	 	Gun6 = CFrame.new(317.9, 271.7, 142.3), -- AK47
 	 	Gun7 = CFrame.new(148.1, 259.7, 323.9), -- M1014
-	 	Gun8 = CFrame.new(location), -- Raygun
-	 	Gun9 = CFrame.new(location), -- Raygun
-	 	Gun10 = CFrame.new(location), -- Raygun
-	 	Gun11 = CFrame.new(location), -- Raygun
-	 	Gun12 = CFrame.new(location), -- Raygun
-	 	Gun13 = CFrame.new(location), -- Raygun
-	 	Gun14 = CFrame.new(location), -- Raygun
-	 	Gun15 = CFrame.new(location), -- Raygun
-	 },
-	 zombie = {
-	 	Zombie1 = CFrame.new(location), -- Zomb
-	 	Zombie2 = CFrame.new(location), -- Zomb
-	 	Zombie3 = CFrame.new(location), -- Zomb
-	 	Zombie4 = CFrame.new(location), -- Zomb
-	 	Zombie5 = CFrame.new(location), -- Zomb
-	 	Zombie6 = CFrame.new(location), -- Zomb
-	 	Zombie7 = CFrame.new(location), -- Zomb
-	 	Zombie8 = CFrame.new(location), -- Zomb
-	 	Zombie9 = CFrame.new(location), -- Zomb
 	 }
 }
 
