@@ -14,7 +14,7 @@ local activeLoopName = nil
 local isMinimized = false
 local infiniteJump = false 
 
--- ⚡ TARGET PLACEHOLDERS (Cleaned up vectors so they never throw nil errors)
+-- ⚡ TARGET PLACEHOLDERS
 local TARGETS = {
 	 guns = {
 	 	Gun1 = CFrame.new(114.4, 335.5, 569.9), -- Raygun
@@ -24,26 +24,7 @@ local TARGETS = {
 	 	Gun5 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
 	 	Gun6 = CFrame.new(317.9, 271.7, 142.3), -- AK47
 	 	Gun7 = CFrame.new(148.1, 259.7, 323.9), -- M1014
-	 	Gun8 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun9 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun10 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun11 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun12 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun13 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun14 = CFrame.new(114.4, 335.5, 569.9), 
-	 	Gun15 = CFrame.new(114.4, 335.5, 569.9), 
-	 },
-	 zombie = {
-	 	Zombie1 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie2 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie3 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie4 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie5 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie6 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie7 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie8 = CFrame.new(148.1, 259.7, 323.9), 
-	 	Zombie9 = CFrame.new(148.1, 259.7, 323.9), 
-	 }
+	 	}
 }
 
 -- GUI SETUP
@@ -56,6 +37,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 520, 0, 320)
 main.Position = UDim2.new(0.5, -260, 0.5, -160)
+
+-- ✨ NEON TRANSPARENT VISUAL OVERHAUL (UNCHANGED)
 main.BackgroundColor3 = Color3.fromRGB(0, 240, 255) 
 main.BackgroundTransparency = 0.88 
 main.BorderSizePixel = 0
@@ -115,12 +98,14 @@ task.spawn(function()
 end)
 
 -- ====================================================================
--- ✨ 2. NOTIFICATION SYSTEM
+-- ✨ 2. NOTIFICATION SYSTEM (Transparent Dark Style)
 -- ====================================================================
 local function showNotification(titleText, bodyText)
 	local notifFrame = Instance.new("Frame")
 	notifFrame.Size = UDim2.new(0, 300, 0, 75)
 	notifFrame.Position = UDim2.new(1, 20, 1, -95) 
+	
+	-- 🖤 SLEEK SLIGHTLY TRANSPARENT BLACK FOR NOTIFICATIONS
 	notifFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 	notifFrame.BackgroundTransparency = 0.4
 	notifFrame.BorderSizePixel = 0
@@ -171,6 +156,7 @@ local function showNotification(titleText, bodyText)
 	end)
 end
 
+-- Welcome Notice
 task.spawn(function()
 	task.wait(3.3)
 	showNotification("🔔 SYSTEM NOTICE", "You're using M4keCrzy script\nuse at your own risk")
@@ -279,27 +265,20 @@ end)
 
 local pages = {}
 local function createPage(name)
+	-- Changed from Frame to ScrollingFrame
 	local f = Instance.new("ScrollingFrame")
 	f.Size = UDim2.new(1, 0, 1, 0)
 	f.BackgroundTransparency = 1
 	f.BorderSizePixel = 0
-	f.ScrollBarThickness = 5                     
-	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) 
-	f.CanvasSize = UDim2.new(0, 0, 0, 0)       
-	f.AutomaticCanvasSize = Enum.AutomaticCanvasSize.Y
-	f.ClipsDescendants = true
+	f.ScrollBarThickness = 5                     -- Slim, clean scrollbar
+	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) -- Matches your neon theme
+	f.CanvasSize = UDim2.new(0, 0, 0, 500)       -- 500 height gives plenty of room for 15+ buttons
 	f.Visible = false
 	f.Parent = content
-	
-	local layout = Instance.new("UIListLayout")
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
-	layout.Padding = UDim.new(0, 6)
-	layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	layout.Parent = f
-	
 	pages[name] = f
 	return f
 end
+
 
 local guns = createPage("Guns")
 local zombie = createPage("Zombie")
@@ -335,32 +314,32 @@ end
 createTabButton("Guns", 20)
 createTabButton("Zombie", 60)
 createTabButton("Player", 100)
-createTabButton("Settings", 150)
+createTabButton("Settings", 135)
 
-local function createHeaderLabel(parent, text, order)
+local function createHeaderLabel(parent, text)
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.new(0, 350, 0, 25)
+	label.Position = UDim2.new(0, 20, 0, 10)
 	label.Text = "— " .. text .. " —"
 	label.Font = Enum.Font.GothamBold
 	label.TextSize = 13
 	label.TextColor3 = Color3.fromRGB(200, 240, 255)
 	label.BackgroundTransparency = 1
 	label.TextXAlignment = Enum.TextXAlignment.Center
-	label.LayoutOrder = order or 0
 	label.Parent = parent
 	return label
 end
 
-local function createButton(parent, text, order)
+local function createButton(parent, text, y)
 	local b = Instance.new("TextButton")
 	b.Size = UDim2.new(0, 350, 0, 40)
+	b.Position = UDim2.new(0, 20, 0, y)
 	b.Text = text
 	b.Font = Enum.Font.GothamMedium
 	b.TextSize = 14
 	b.TextColor3 = Color3.new(1,1,1)
 	b.BackgroundColor3 = Color3.fromRGB(0, 80, 110)
 	b.BackgroundTransparency = 0.4
-	b.LayoutOrder = order or 1
 	b.Parent = parent
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
 	return b
@@ -369,12 +348,13 @@ end
 -- ====================================================================
 -- 🌀 INSTANT TELEPORT SYSTEM (NON-LOOPING)
 -- ====================================================================
-local function createInstantTeleportButton(parent, defaultText, targetKey, coreTable, order)
-	local b = createButton(parent, defaultText, order)
+local function createInstantTeleportButton(parent, defaultText, targetKey, y, coreTable)
+	local b = createButton(parent, defaultText, y)
 	
 	b.MouseButton1Click:Connect(function()
 		local char = player.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
+			-- Grab the CFrame from either a specific sub-table (like Guns/Zombies) or the main TARGETS table
 			local targetCFrame = coreTable and coreTable[targetKey] or TARGETS[targetKey]
 			
 			if typeof(targetCFrame) == "CFrame" then
@@ -385,30 +365,20 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, coreT
 	end)
 end
 
--- ====================================================================
--- 🔄 ULTRA-STABLE PARSING LOOPS
--- ====================================================================
+createHeaderLabel(guns, "GUNS CONTROLS")
+-- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
+createInstantTeleportButton(guns, "TP | Raygun", "Gun1", 5, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | G36C", "Gun2", 15, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Armor", "Gun3", 25, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | SVD", "Gun4", 35, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 45, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AK47", "Gun6", 55, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M1014", "Gun7", 65, TARGETS.guns)
 
--- Generate Gun Buttons safely using string extraction to maintain neat ordering
-createHeaderLabel(guns, "GUNS CONTROLS", 0)
-for key, _ in pairs(TARGETS.guns) do
-	local numOrder = tonumber(string.match(key, "%d+")) or 1
-	createInstantTeleportButton(guns, "TP | " .. tostring(key), key, TARGETS.guns, numOrder)
-end
-
--- Generate Zombie Buttons safely
-createHeaderLabel(zombie, "ZOMBIE CONTROLS", 0)
-for key, _ in pairs(TARGETS.zombie) do
-	local numOrder = tonumber(string.match(key, "%d+")) or 1
-	createInstantTeleportButton(zombie, "TP | " .. tostring(key), key, TARGETS.zombie, numOrder)
-end
-
--- ====================================================================
--- 👤 PLAYER TAB UTILITIES
--- ====================================================================
-local function makeNumberBox(parent, text, order, callback)
+local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
 	box.Size = UDim2.new(0, 350, 0, 40)
+	box.Position = UDim2.new(0, 20, 0, y)
 	box.Text = ""
 	box.PlaceholderText = text
 	box.Font = Enum.Font.Gotham
@@ -417,7 +387,6 @@ local function makeNumberBox(parent, text, order, callback)
 	box.BackgroundColor3 = Color3.fromRGB(0, 80, 110)
 	box.BackgroundTransparency = 0.4
 	box.ClearTextOnFocus = false
-	box.LayoutOrder = order
 	box.Parent = parent
 
 	Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
@@ -434,15 +403,14 @@ local function makeNumberBox(parent, text, order, callback)
 	end)
 end
 
-createHeaderLabel(playerTab, "MODIFICATIONS", 0)
-makeNumberBox(playerTab, "Speed (0–500)", 1, function(val)
+makeNumberBox(playerTab, "Speed (0–500)", 20, function(val)
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if hum then
 		hum.WalkSpeed = val
 	end
 end)
 
-makeNumberBox(playerTab, "Jump Power (0–500)", 2, function(val)
+makeNumberBox(playerTab, "Jump Power (0–500)", 70, function(val)
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if hum then
 		hum.UseJumpPower = true
@@ -450,7 +418,7 @@ makeNumberBox(playerTab, "Jump Power (0–500)", 2, function(val)
 	end
 end)
 
-local noclipBtn = createButton(playerTab, "No-Clip: OFF", 3)
+local noclipBtn = createButton(playerTab, "No-Clip: OFF", 120)
 noclipBtn.MouseButton1Click:Connect(function()
 	noclip = not noclip
 	noclipBtn.Text = noclip and "No-Clip: ON" or "No-Clip: OFF"
@@ -466,7 +434,9 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
-local infJumpBtn = createButton(playerTab, "Infinite Jump: OFF", 4)
+-- UNLIMITED JUMP SYSTEM
+local infJumpBtn = createButton(playerTab, "Infinite Jump: OFF", 170)
+
 infJumpBtn.MouseButton1Click:Connect(function()
 	infiniteJump = not infiniteJump
 	
@@ -491,8 +461,7 @@ end)
 -- ====================================================================
 -- ⚙️ SETTINGS PANEL WITH ALERTS
 -- ====================================================================
-createHeaderLabel(settings, "SYSTEM SETTINGS", 0)
-local antiAfkBtn = createButton(settings, "Anti-AFK: OFF", 1)
+local antiAfkBtn = createButton(settings, "Anti-AFK: OFF", 20)
 antiAfkBtn.MouseButton1Click:Connect(function()
 	afkEnabled = not afkEnabled
 	
@@ -513,7 +482,7 @@ player.Idled:Connect(function()
 	end
 end)
 
-local rejoinBtn = createButton(settings, "Rejoin Server", 2)
+local rejoinBtn = createButton(settings, "Rejoin Server", 70)
 rejoinBtn.MouseButton1Click:Connect(function()
 	activeLoopName = nil
 	if #Players:GetPlayers() <= 1 then
