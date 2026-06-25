@@ -24,7 +24,26 @@ local TARGETS = {
 	 	Gun5 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
 	 	Gun6 = CFrame.new(317.9, 271.7, 142.3), -- AK47
 	 	Gun7 = CFrame.new(148.1, 259.7, 323.9), -- M1014
-}
+	 	Gun8 = CFrame.new(location), -- Raygun
+	 	Gun9 = CFrame.new(location), -- Raygun
+	 	Gun10 = CFrame.new(location), -- Raygun
+	 	Gun11 = CFrame.new(location), -- Raygun
+	 	Gun12 = CFrame.new(location), -- Raygun
+	 	Gun13 = CFrame.new(location), -- Raygun
+	 	Gun14 = CFrame.new(location), -- Raygun
+	 	Gun15 = CFrame.new(location), -- Raygun
+	 },
+	 zombie = {
+	 	Zombie1 = CFrame.new(location), -- Zomb
+	 	Zombie2 = CFrame.new(location), -- Zomb
+	 	Zombie3 = CFrame.new(location), -- Zomb
+	 	Zombie4 = CFrame.new(location), -- Zomb
+	 	Zombie5 = CFrame.new(location), -- Zomb
+	 	Zombie6 = CFrame.new(location), -- Zomb
+	 	Zombie7 = CFrame.new(location), -- Zomb
+	 	Zombie8 = CFrame.new(location), -- Zomb
+	 	Zombie9 = CFrame.new(location), -- Zomb
+	 }
 }
 
 -- GUI SETUP
@@ -265,14 +284,20 @@ end)
 
 local pages = {}
 local function createPage(name)
-	local f = Instance.new("Frame")
+	-- Changed from Frame to ScrollingFrame
+	local f = Instance.new("ScrollingFrame")
 	f.Size = UDim2.new(1, 0, 1, 0)
 	f.BackgroundTransparency = 1
+	f.BorderSizePixel = 0
+	f.ScrollBarThickness = 5                     -- Slim, clean scrollbar
+	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) -- Matches your neon theme
+	f.CanvasSize = UDim2.new(0, 0, 0, 500)       -- 500 height gives plenty of room for 15+ buttons
 	f.Visible = false
 	f.Parent = content
 	pages[name] = f
 	return f
 end
+
 
 local guns = createPage("Guns")
 local zombie = createPage("Zombie")
