@@ -16,15 +16,18 @@ local infiniteJump = false
 
 -- ⚡ TARGET PLACEHOLDERS
 local TARGETS = {
-	 guns = {
-	 	Gun1 = CFrame.new(114.4, 335.5, 569.9), -- Raygun
-	 	Gun2 = CFrame.new(-146.4, 313.5, 280.6), -- G36C
-	 	Gun3 = CFrame.new(-175.1, 293.5, 318.5), -- Armor
-	 	Gun4 = CFrame.new(200.7, 301.5, 160.2), -- SVD
-	 	Gun5 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
-	 	Gun6 = CFrame.new(317.9, 271.7, 142.3), -- AK47
-	 	Gun7 = CFrame.new(148.1, 259.7, 323.9), -- M1014
-	 }
+	guns = {
+		Gun1 = CFrame.new(114.4, 335.5, 569.9),   -- Raygun
+		Gun2 = CFrame.new(-146.4, 313.5, 280.6),  -- G36C
+		Gun3 = CFrame.new(-175.1, 293.5, 318.5),  -- Armor
+		Gun4 = CFrame.new(200.7, 301.5, 160.2),   -- SVD
+		Gun5 = CFrame.new(3.2, 267.7, 185.0),    -- M16A2/M203
+		Gun6 = CFrame.new(317.9, 271.7, 142.3),   -- AK47
+		Gun7 = CFrame.new(148.1, 259.7, 323.9),   -- M1014
+	},
+	zombies = {
+		-- Ready for when you hand-code your zombie coordinates later!
+	}
 }
 
 -- GUI SETUP
@@ -38,7 +41,7 @@ local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 520, 0, 320)
 main.Position = UDim2.new(0.5, -260, 0.5, -160)
 
--- ✨ NEON TRANSPARENT VISUAL OVERHAUL (UNCHANGED)
+-- ✨ NEON TRANSPARENT VISUAL OVERHAUL
 main.BackgroundColor3 = Color3.fromRGB(0, 240, 255) 
 main.BackgroundTransparency = 0.88 
 main.BorderSizePixel = 0
@@ -105,7 +108,6 @@ local function showNotification(titleText, bodyText)
 	notifFrame.Size = UDim2.new(0, 300, 0, 75)
 	notifFrame.Position = UDim2.new(1, 20, 1, -95) 
 	
-	-- 🖤 SLEEK SLIGHTLY TRANSPARENT BLACK FOR NOTIFICATIONS
 	notifFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
 	notifFrame.BackgroundTransparency = 0.4
 	notifFrame.BorderSizePixel = 0
@@ -156,7 +158,6 @@ local function showNotification(titleText, bodyText)
 	end)
 end
 
--- Welcome Notice
 task.spawn(function()
 	task.wait(3.3)
 	showNotification("🔔 SYSTEM NOTICE", "You're using M4keCrzy script\nuse at your own risk")
@@ -263,22 +264,23 @@ minimize.MouseButton1Click:Connect(function()
 	end
 end)
 
+-- SCROLLABLE PAGES FUNCTION (FIXED CLIPPING & INPUTS)
 local pages = {}
 local function createPage(name)
-	-- Changed from Frame to ScrollingFrame
 	local f = Instance.new("ScrollingFrame")
 	f.Size = UDim2.new(1, 0, 1, 0)
 	f.BackgroundTransparency = 1
 	f.BorderSizePixel = 0
-	f.ScrollBarThickness = 5                     -- Slim, clean scrollbar
-	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) -- Matches your neon theme
-	f.CanvasSize = UDim2.new(0, 0, 0, 500)       -- 500 height gives plenty of room for 15+ buttons
+	f.ScrollBarThickness = 5                     
+	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) 
+	f.CanvasSize = UDim2.new(0, 0, 0, 0)               
+	f.AutomaticCanvasSize = Enum.AutomaticCanvasSize.Y   -- Grows dynamic as you add hand-coded points
+	f.ClipsDescendants = true                            
 	f.Visible = false
 	f.Parent = content
 	pages[name] = f
 	return f
 end
-
 
 local guns = createPage("Guns")
 local zombie = createPage("Zombie")
@@ -354,7 +356,6 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 	b.MouseButton1Click:Connect(function()
 		local char = player.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
-			-- Grab the CFrame from either a specific sub-table (like Guns/Zombies) or the main TARGETS table
 			local targetCFrame = coreTable and coreTable[targetKey] or TARGETS[targetKey]
 			
 			if typeof(targetCFrame) == "CFrame" then
@@ -365,16 +366,22 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 	end)
 end
 
+-- 🔫 GUNS PAGE LAYOUT (FIXED SPACING CODES)
 createHeaderLabel(guns, "GUNS CONTROLS")
--- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
-createInstantTeleportButton(guns, "TP | Raygun", "Gun1", 5, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | G36C", "Gun2", 10, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Armor", "Gun3", 15, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | SVD", "Gun4", 20, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 25, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | AK47", "Gun6", 30, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M1014", "Gun7", 35, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Raygun", "Gun1", 45, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | G36C", "Gun2", 90, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Armor", "Gun3", 135, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | SVD", "Gun4", 180, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 225, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AK47", "Gun6", 270, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M1014", "Gun7", 315, TARGETS.guns)
 
+-- 🧟 ZOMBIE PAGE LAYOUT 
+createHeaderLabel(zombie, "ZOMBIE CONTROLS")
+
+-- ====================================================================
+-- 👤 PLAYER TAB UTILITIES
+-- ====================================================================
 local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
 	box.Size = UDim2.new(0, 350, 0, 40)
@@ -403,14 +410,14 @@ local function makeNumberBox(parent, text, y, callback)
 	end)
 end
 
-makeNumberBox(playerTab, "Speed (0–500)", 20, function(val)
+makeNumberBox(playerTab, "Speed (0–500)", 45, function(val)
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if hum then
 		hum.WalkSpeed = val
 	end
 end)
 
-makeNumberBox(playerTab, "Jump Power (0–500)", 70, function(val)
+makeNumberBox(playerTab, "Jump Power (0–500)", 95, function(val)
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if hum then
 		hum.UseJumpPower = true
@@ -418,7 +425,7 @@ makeNumberBox(playerTab, "Jump Power (0–500)", 70, function(val)
 	end
 end)
 
-local noclipBtn = createButton(playerTab, "No-Clip: OFF", 120)
+local noclipBtn = createButton(playerTab, "No-Clip: OFF", 145)
 noclipBtn.MouseButton1Click:Connect(function()
 	noclip = not noclip
 	noclipBtn.Text = noclip and "No-Clip: ON" or "No-Clip: OFF"
@@ -434,9 +441,7 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
--- UNLIMITED JUMP SYSTEM
-local infJumpBtn = createButton(playerTab, "Infinite Jump: OFF", 170)
-
+local infJumpBtn = createButton(playerTab, "Infinite Jump: OFF", 195)
 infJumpBtn.MouseButton1Click:Connect(function()
 	infiniteJump = not infiniteJump
 	
@@ -461,7 +466,7 @@ end)
 -- ====================================================================
 -- ⚙️ SETTINGS PANEL WITH ALERTS
 -- ====================================================================
-local antiAfkBtn = createButton(settings, "Anti-AFK: OFF", 20)
+local antiAfkBtn = createButton(settings, "Anti-AFK: OFF", 45)
 antiAfkBtn.MouseButton1Click:Connect(function()
 	afkEnabled = not afkEnabled
 	
@@ -482,7 +487,7 @@ player.Idled:Connect(function()
 	end
 end)
 
-local rejoinBtn = createButton(settings, "Rejoin Server", 70)
+local rejoinBtn = createButton(settings, "Rejoin Server", 95)
 rejoinBtn.MouseButton1Click:Connect(function()
 	activeLoopName = nil
 	if #Players:GetPlayers() <= 1 then
