@@ -38,7 +38,7 @@ local TARGETS = {
 
 -- GUI SETUP
 local gui = Instance.new("ScreenGui")
-gui.Name = "⚡ M4keCrzy_Premium 💎 || Speed Titan 🦴"
+gui.Name = "⚡ M4keCrzy_Premium 💎 || Survive Area 51 🦴"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -208,7 +208,7 @@ topCorner.Parent = topbar
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -150, 1, 0)
 title.Position = UDim2.new(0, 10, 0, 0)
-title.Text = "⚡ M4keCrzy_Premium💎 || Speed Titan 🦴"
+title.Text = "⚡ M4keCrzy_Premium💎 || Survive Area 51 🦴"
 title.TextColor3 = Color3.fromRGB(255,255,255)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
@@ -281,7 +281,7 @@ local function createPage(name)
 	f.BorderSizePixel = 0
 	f.ScrollBarThickness = 5                     -- Slim, clean scrollbar
 	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) -- Matches your neon theme
-	f.CanvasSize = UDim2.new(0, 0, 0, 500)       -- 500 height gives plenty of room for 15+ buttons
+	f.CanvasSize = UDim2.new(0, 0, 0, 800)       -- 500 height gives plenty of room for 15+ buttons
 	f.Visible = false
 	f.Parent = content
 	pages[name] = f
