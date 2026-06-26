@@ -17,13 +17,22 @@ local infiniteJump = false
 -- ⚡ TARGET PLACEHOLDERS
 local TARGETS = {
 	 guns = {
-	 	Gun1 = CFrame.new(114.4, 335.5, 569.9), -- Raygun
-	 	Gun2 = CFrame.new(-146.4, 313.5, 280.6), -- G36C
-	 	Gun3 = CFrame.new(-175.1, 293.5, 318.5), -- Armor
-	 	Gun4 = CFrame.new(200.7, 301.5, 160.2), -- SVD
-	 	Gun5 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
-	 	Gun6 = CFrame.new(317.9, 271.7, 142.3), -- AK47
-	 	Gun7 = CFrame.new(148.1, 259.7, 323.9), -- M1014
+	 	raygun = CFrame.new(114.4, 335.5, 569.9), -- Raygun
+	 	g36c = CFrame.new(-146.4, 313.5, 280.6), -- G36C
+	 	armor = CFrame.new(-175.1, 293.5, 318.5), -- Armor
+	 	svd = CFrame.new(200.7, 301.5, 160.2), -- SVD
+	 	m16a2 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
+	 	ak47 = CFrame.new(317.9, 271.7, 142.3), -- AK47
+	 	m1014 = CFrame.new(148.1, 259.7, 323.9), -- M1014
+	 	m14 = CFrame.new(113.8, 323.5, 677.7), -- M14
+	 	anaconda = CFrame.new(128.4, 343.5, 764.2), -- Colt Anaconda
+	 	an94 = CFrame.new(158.9, 343.5, 607.5), -- AN-94
+	 	m4a1 = CFrame.new(374.2, 323.5, 652.2), -- M4A1
+	 	flamethrower = CFrame.new(465.9, 313.5, 755.1), -- Flamethrower
+	 	p90 = CFrame.new(-152.9, 303.5, 768.2), -- P90
+	 	db = CFrame.new(-100.9, 313.5, 460.2), -- DB Shotgun
+	 	awp = CFrame.new(71.1, 281.7, 34.4), -- Awp
+	 	ammo = CFrame.new(184.2, 314.1, 437.4) -- Ammo
 	 	}
 }
 
@@ -364,16 +373,25 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 		end
 	end)
 end
-
+createHeaderLabel(guns, "AMMO & ARMOR")
+createInstantTeleportButton(guns, "TP | Ammo", "ammo", 5, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Armor", "armor", 50, TARGETS.guns)
 createHeaderLabel(guns, "GUNS CONTROLS")
 -- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
-createInstantTeleportButton(guns, "TP | Raygun", "Gun1", 5, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | G36C", "Gun2", 50, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Armor", "Gun3", 95, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | SVD", "Gun4", 140, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M16A2/M203", "Gun5", 185, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | AK47", "Gun6", 230, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M1014", "Gun7", 275, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Raygun", "raygun", 5, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | G36C", "g36c", 50, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M14", "m14", 95, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | SVD", "svd", 140, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M16A2/M203", "m16a2", 185, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AK47", "ak47", 230, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M1014", "m1014", 275, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Colt Anaconda", "anaconda", 320, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AN 94", "an94", 365, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M4A1", "m4a1", 410, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Flamethrower", "flamethrower", 455, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | P90", "p90", 500, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | DB Shotgun", "db", 545, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Awp", "awp", 590, TARGETS.guns)
 
 local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
