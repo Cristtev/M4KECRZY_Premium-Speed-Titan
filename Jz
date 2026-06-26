@@ -19,7 +19,6 @@ local TARGETS = {
 	 guns = {
 	 	raygun = CFrame.new(114.4, 335.5, 569.9), -- Raygun
 	 	g36c = CFrame.new(-146.4, 313.5, 280.6), -- G36C
-	 	armor = CFrame.new(-175.1, 293.5, 318.5), -- Armor
 	 	svd = CFrame.new(200.7, 301.5, 160.2), -- SVD
 	 	m16a2 = CFrame.new(3.2, 267.7, 185.0), -- M16A2/M203
 	 	ak47 = CFrame.new(317.9, 271.7, 142.3), -- AK47
@@ -31,9 +30,13 @@ local TARGETS = {
 	 	flamethrower = CFrame.new(465.9, 313.5, 755.1), -- Flamethrower
 	 	p90 = CFrame.new(-152.9, 303.5, 768.2), -- P90
 	 	db = CFrame.new(-100.9, 313.5, 460.2), -- DB Shotgun
-	 	awp = CFrame.new(71.1, 281.7, 34.4), -- Awp
-	 	ammo = CFrame.new(184.2, 314.1, 437.4) -- Ammo
-	 	}
+	 	awp = CFrame.new(71.1, 281.7, 34.4) -- Awp
+	 	},
+	 others = {
+	 	spawn = CFrame.new(326.1, 511.7, 398.3), -- Spawnpoint
+	 	ammo = CFrame.new(184.2, 314.1, 437.4), -- Ammo
+	 	armor = CFrame.new(-175.1, 293.5, 318.5), -- Armor
+	 }
 }
 
 -- GUI SETUP
@@ -290,6 +293,7 @@ end
 
 
 local guns = createPage("Guns")
+local port = createPage("Others")
 local zombie = createPage("Zombie")
 local playerTab = createPage("Player")
 local settings = createPage("Settings")
@@ -321,9 +325,10 @@ local function createTabButton(name, y)
 end
 
 createTabButton("Guns", 20)
-createTabButton("Zombie", 60)
-createTabButton("Player", 100)
-createTabButton("Settings", 140)
+createTabButton("Others", 60)
+createTabButton("Zombie", 100)
+createTabButton("Player", 140)
+createTabButton("Settings", 180)
 
 local function createHeaderLabel(parent, text)
 	local label = Instance.new("TextLabel")
@@ -373,9 +378,12 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 		end
 	end)
 end
-createHeaderLabel(guns, "AMMO & ARMOR")
-createInstantTeleportButton(guns, "TP | Ammo", "ammo", 5, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Armor", "armor", 50, TARGETS.guns)
+
+-- others
+createHeaderLabel(others, "OTHERS CONTROLS")
+createInstantTeleportButton(others, "TP | SpawnPoint", "spawn", 5, TARGETS.others)
+createInstantTeleportButton(others, "TP | Ammo", "ammo", 50, TARGETS.others)
+createInstantTeleportButton(others, "TP | Armor", "armor", 95, TARGETS.others)
 createHeaderLabel(guns, "GUNS CONTROLS")
 -- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
 createInstantTeleportButton(guns, "TP | Raygun", "raygun", 5, TARGETS.guns)
