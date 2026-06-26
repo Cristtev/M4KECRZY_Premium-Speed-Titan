@@ -30,12 +30,15 @@ local TARGETS = {
 	 	flamethrower = CFrame.new(465.9, 313.5, 755.1), -- Flamethrower
 	 	p90 = CFrame.new(-152.9, 303.5, 768.2), -- P90
 	 	db = CFrame.new(-100.9, 313.5, 460.2), -- DB Shotgun
-	 	awp = CFrame.new(71.1, 281.7, 34.4) -- Awp
+	 	awp = CFrame.new(71.1, 281.7, 34.4), -- Awp
+	 	r870 = CFrame.new(137.3, 333.5, 500.7) -- R870
 	 	},
 	 fate = {
 	 	spawn = CFrame.new(326.1, 511.7, 398.3), -- Spawnpoint
 	 	ammo = CFrame.new(184.2, 314.1, 437.4), -- Ammo
 	 	armor = CFrame.new(-175.1, 293.5, 318.5), -- Armor
+	 	ammo2 = CFrame.new(205.2, 344.1, 812.3), -- Ammo2
+	 	zombs = CFrame.new(402.2, 513.0, 393.0) -- ZombieChar
 	 }
 }
 
@@ -382,9 +385,11 @@ end
 -- others
 createHeaderLabel(port, "OTHERS CONTROLS")
 createInstantTeleportButton(port, "TP | SpawnPoint", "spawn", 5, TARGETS.fate)
-createInstantTeleportButton(fate, "TP | Ammo", "ammo", 50, TARGETS.fate)
-createInstantTeleportButton(port, "TP | Armor", "armor", 95, TARGETS.fate)
-createHeaderLabel(port, "GUNS CONTROLS")
+createInstantTeleportButton(port, "TP | Ammo1", "ammo", 50, TARGETS.fate)
+createInstantTeleportButton(port, "TP | Ammo2", "ammo2", 95, TARGETS.fate)
+createInstantTeleportButton(port, "TP | Armor", "armor", 140, TARGETS.fate)
+createInstantTeleportButton(port, "TP | ZombieChar", "zombs", 185, TARGETS.fate)
+createHeaderLabel(guns, "GUNS CONTROLS")
 -- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
 createInstantTeleportButton(guns, "TP | Raygun", "raygun", 5, TARGETS.guns)
 createInstantTeleportButton(guns, "TP | G36C", "g36c", 50, TARGETS.guns)
@@ -400,6 +405,7 @@ createInstantTeleportButton(guns, "TP | Flamethrower", "flamethrower", 455, TARG
 createInstantTeleportButton(guns, "TP | P90", "p90", 500, TARGETS.guns)
 createInstantTeleportButton(guns, "TP | DB Shotgun", "db", 545, TARGETS.guns)
 createInstantTeleportButton(guns, "TP | Awp", "awp", 590, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | R870", "r870", 635, TARGETS.guns)
 
 local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
