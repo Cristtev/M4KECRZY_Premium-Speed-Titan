@@ -51,6 +51,24 @@ gui.Name = "⚡ M4keCrzy_Premium 💎 || Survive Area 51 🦴"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- HUD POINTER SELECTION RING
+local hudPointer = Instance.new("Frame")
+hudPointer.Size = UDim2.new(0, 45, 0, 45)
+hudPointer.AnchorPoint = Vector2.new(0.5, 0.5)
+hudPointer.BackgroundColor3 = Color3.fromRGB(255, 0, 80)
+hudPointer.BackgroundTransparency = 1
+hudPointer.Visible = false
+hudPointer.Parent = gui
+
+local hudStroke = Instance.new("UIStroke")
+hudStroke.Thickness = 2
+hudStroke.Color = Color3.fromRGB(0, 255, 140)
+hudStroke.Parent = hudPointer
+
+local hudCorner = Instance.new("UICorner")
+hudCorner.CornerRadius = UDim.new(1, 0)
+hudCorner.Parent = hudPointer
+
 -- MAIN FRAME DECLARATION
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 520, 0, 320)
@@ -503,6 +521,7 @@ aimbotBtn.MouseButton1Click:Connect(function()
 		showNotification("🎯 TARGETING SYSTEM", "Aimbot and Auto-Fire Activated")
 	else
 		aimbotBtn.Text = "Aimbot & Auto-Fire: OFF"
+		hudPointer.Visible = false
 		showNotification("🎯 TARGETING SYSTEM", "Targeting Disabled")
 	end
 end)
@@ -532,23 +551,39 @@ local function getNearestNPC()
 end
 
 RunService.RenderStepped:Connect(function()
-	if not aimbotEnabled then return end
+	if not aimbotEnabled then 
+		hudPointer.Visible = false
+		return 
+	end
 	
 	local char = player.Character
 	local camera = workspace.CurrentCamera
 	if char and camera then
 		local target = getNearestNPC()
 		if target then
+			-- Force camera lock
 			camera.CFrame = CFrame.lookAt(camera.CFrame.Position, target.Position)
 			
-			local currentWeapon = char:FindFirstChildOfClass("Tool")
-			if currentWeapon then
-				local now = os.clock()
-				if now - lastShotTime >= AUTO_FIRE_DELAY then
-					lastShotTime = now
-					currentWeapon:Activate()
+			-- HUV / HUD Vector Pointer Calculation
+			local screenPos, onScreen = camera:WorldToViewportPoint(target.Position)
+			if onScreen then
+				hudPointer.Position = UDim2.new(0, screenPos.X, 0, screenPos.Y)
+				hudPointer.Visible = true
+				
+				-- Safe Target Verification and Auto-Fire Execution
+				local currentWeapon = char:FindFirstChildOfClass("Tool")
+				if currentWeapon then
+					local now = os.clock()
+					if now - lastShotTime >= AUTO_FIRE_DELAY then
+						lastShotTime = now
+						currentWeapon:Activate()
+					end
 				end
+			else
+				hudPointer.Visible = false
 			end
+		else
+			hudPointer.Visible = false
 		end
 	end
 end)
@@ -586,6 +621,7 @@ rejoinBtn.MouseButton1Click:Connect(function()
 		TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
 	end
 end)
+
 
 -- DRAG SYSTEM
 local dragging = false
