@@ -13,6 +13,9 @@ local afkEnabled = false
 local activeLoopName = nil 
 local isMinimized = false
 local infiniteJump = false 
+local aimbotEnabled = false
+local lastShotTime = 0
+local AUTO_FIRE_DELAY = 0.1
 
 -- ⚡ TARGET PLACEHOLDERS
 local TARGETS = {
@@ -280,20 +283,18 @@ end)
 
 local pages = {}
 local function createPage(name)
-	-- Changed from Frame to ScrollingFrame
 	local f = Instance.new("ScrollingFrame")
 	f.Size = UDim2.new(1, 0, 1, 0)
 	f.BackgroundTransparency = 1
 	f.BorderSizePixel = 0
-	f.ScrollBarThickness = 5                     -- Slim, clean scrollbar
-	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) -- Matches your neon theme
-	f.CanvasSize = UDim2.new(0, 0, 0, 800)       -- 500 height gives plenty of room for 15+ buttons
+	f.ScrollBarThickness = 5                     
+	f.ScrollBarImageColor3 = Color3.fromRGB(0, 240, 255) 
+	f.CanvasSize = UDim2.new(0, 0, 0, 800)       
 	f.Visible = false
 	f.Parent = content
 	pages[name] = f
 	return f
 end
-
 
 local guns = createPage("Guns")
 local port = createPage("Others")
@@ -333,10 +334,10 @@ createTabButton("Zombie", 100)
 createTabButton("Player", 140)
 createTabButton("Settings", 180)
 
-local function createHeaderLabel(parent, text)
+local function createHeaderLabel(parent, text, y)
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.new(0, 350, 0, 25)
-	label.Position = UDim2.new(0, 20, 0, 10)
+	label.Position = UDim2.new(0, 20, 0, y or 10)
 	label.Text = "— " .. text .. " —"
 	label.Font = Enum.Font.GothamBold
 	label.TextSize = 13
@@ -371,7 +372,6 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 	b.MouseButton1Click:Connect(function()
 		local char = player.Character
 		if char and char:FindFirstChild("HumanoidRootPart") then
-			-- Grab the CFrame from either a specific sub-table (like Guns/Zombies) or the main TARGETS table
 			local targetCFrame = coreTable and coreTable[targetKey] or TARGETS[targetKey]
 			
 			if typeof(targetCFrame) == "CFrame" then
@@ -382,30 +382,31 @@ local function createInstantTeleportButton(parent, defaultText, targetKey, y, co
 	end)
 end
 
--- others
-createHeaderLabel(port, "OTHERS CONTROLS")
-createInstantTeleportButton(port, "TP | SpawnPoint", "spawn", 5, TARGETS.fate)
-createInstantTeleportButton(port, "TP | Ammo1", "ammo", 50, TARGETS.fate)
-createInstantTeleportButton(port, "TP | Ammo2", "ammo2", 95, TARGETS.fate)
-createInstantTeleportButton(port, "TP | Armor", "armor", 140, TARGETS.fate)
-createInstantTeleportButton(port, "TP | ZombieChar", "zombs", 185, TARGETS.fate)
-createHeaderLabel(guns, "GUNS CONTROLS")
--- Hand-coded Gun TPs (Change the Y-axis position for each button so they don't overlap)
-createInstantTeleportButton(guns, "TP | Raygun", "raygun", 5, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | G36C", "g36c", 50, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M14", "m14", 95, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | SVD", "svd", 140, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M16A2/M203", "m16a2", 185, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | AK47", "ak47", 230, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M1014", "m1014", 275, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Colt Anaconda", "anaconda", 320, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | AN 94", "an94", 365, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | M4A1", "m4a1", 410, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Flamethrower", "flamethrower", 455, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | P90", "p90", 500, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | DB Shotgun", "db", 545, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | Awp", "awp", 590, TARGETS.guns)
-createInstantTeleportButton(guns, "TP | R870", "r870", 635, TARGETS.guns)
+-- others TPs
+createHeaderLabel(port, "OTHERS CONTROLS", 10)
+createInstantTeleportButton(port, "TP | SpawnPoint", "spawn", 45, TARGETS.fate)
+createInstantTeleportButton(port, "TP | Ammo1", "ammo", 90, TARGETS.fate)
+createInstantTeleportButton(port, "TP | Ammo2", "ammo2", 135, TARGETS.fate)
+createInstantTeleportButton(port, "TP | Armor", "armor", 180, TARGETS.fate)
+createInstantTeleportButton(port, "TP | ZombieChar", "zombs", 225, TARGETS.fate)
+
+-- guns TPs
+createHeaderLabel(guns, "GUNS CONTROLS", 10)
+createInstantTeleportButton(guns, "TP | Raygun", "raygun", 45, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | G36C", "g36c", 90, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M14", "m14", 135, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | SVD", "svd", 180, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M16A2/M203", "m16a2", 225, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AK47", "ak47", 270, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M1014", "m1014", 315, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Colt Anaconda", "anaconda", 360, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | AN 94", "an94", 405, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | M4A1", "m4a1", 450, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Flamethrower", "flamethrower", 495, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | P90", "p90", 540, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | DB Shotgun", "db", 585, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | Awp", "awp", 630, TARGETS.guns)
+createInstantTeleportButton(guns, "TP | R870", "r870", 675, TARGETS.guns)
 
 local function makeNumberBox(parent, text, y, callback)
 	local box = Instance.new("TextBox")
@@ -489,6 +490,65 @@ UserInputService.JumpRequest:Connect(function()
 		local hum = player.Character:FindFirstChildOfClass("Humanoid")
 		if hum then
 			hum:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+	end
+end)
+
+-- AIMBOT & AUTOFIRE BUTTON
+local aimbotBtn = createButton(playerTab, "Aimbot & Auto-Fire: OFF", 220)
+aimbotBtn.MouseButton1Click:Connect(function()
+	aimbotEnabled = not aimbotEnabled
+	if aimbotEnabled then
+		aimbotBtn.Text = "Aimbot & Auto-Fire: ON"
+		showNotification("🎯 TARGETING SYSTEM", "Aimbot and Auto-Fire Activated")
+	else
+		aimbotBtn.Text = "Aimbot & Auto-Fire: OFF"
+		showNotification("🎯 TARGETING SYSTEM", "Targeting Disabled")
+	end
+end)
+
+local function getNearestNPC()
+	local nearestTarget = nil
+	local minDistance = 200 
+	
+	for _, obj in pairs(workspace:GetDescendants()) do
+		if obj:IsA("Model") and obj ~= player.Character then
+			local humanoid = obj:FindFirstChildOfClass("Humanoid")
+			local rootPart = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Head")
+			
+			if humanoid and rootPart and humanoid.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+				local myRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+				if myRoot then
+					local distance = (myRoot.Position - rootPart.Position).Magnitude
+					if distance < minDistance then
+						minDistance = distance
+						nearestTarget = rootPart
+					end
+				end
+			end
+		end
+	end
+	return nearestTarget
+end
+
+RunService.RenderStepped:Connect(function()
+	if not aimbotEnabled then return end
+	
+	local char = player.Character
+	local camera = workspace.CurrentCamera
+	if char and camera then
+		local target = getNearestNPC()
+		if target then
+			camera.CFrame = CFrame.lookAt(camera.CFrame.Position, target.Position)
+			
+			local currentWeapon = char:FindFirstChildOfClass("Tool")
+			if currentWeapon then
+				local now = os.clock()
+				if now - lastShotTime >= AUTO_FIRE_DELAY then
+					lastShotTime = now
+					currentWeapon:Activate()
+				end
+			end
 		end
 	end
 end)
